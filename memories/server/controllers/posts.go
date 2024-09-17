@@ -9,18 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"your_project/models"  // Import the models package
 )
-
-type Post struct {
-	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Title        string             `json:"title"`
-	Message      string             `json:"message"`
-	Creator      string             `json:"creator"`
-	Tags         []string           `json:"tags"`
-	SelectedFile string             `json:"selectedFile"`
-	LikeCount    int                `json:"likeCount"`
-	CreatedAt    time.Time          `json:"createdAt"`
-}
 
 // GetPosts retrieves all posts
 func GetPosts(c *gin.Context, postCollection *mongo.Collection) {
@@ -34,7 +24,7 @@ func GetPosts(c *gin.Context, postCollection *mongo.Collection) {
 	}
 	defer cursor.Close(ctx)
 
-	var posts []Post
+	var posts []models.Post  // Use the Post model
 	if err = cursor.All(ctx, &posts); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -48,7 +38,7 @@ func GetPost(c *gin.Context, postCollection *mongo.Collection) {
 	id := c.Param("id")
 	objID, _ := primitive.ObjectIDFromHex(id)
 
-	var post Post
+	var post models.Post  // Use the Post model
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -63,7 +53,7 @@ func GetPost(c *gin.Context, postCollection *mongo.Collection) {
 
 // CreatePost creates a new post
 func CreatePost(c *gin.Context, postCollection *mongo.Collection) {
-	var post Post
+	var post models.Post  // Use the Post model
 	if err := c.ShouldBindJSON(&post); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -90,7 +80,7 @@ func UpdatePost(c *gin.Context, postCollection *mongo.Collection) {
 	id := c.Param("id")
 	objID, _ := primitive.ObjectIDFromHex(id)
 
-	var updatedPost Post
+	var updatedPost models.Post  // Use the Post model
 	if err := c.ShouldBindJSON(&updatedPost); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -132,7 +122,7 @@ func LikePost(c *gin.Context, postCollection *mongo.Collection) {
 	id := c.Param("id")
 	objID, _ := primitive.ObjectIDFromHex(id)
 
-	var post Post
+	var post models.Post  // Use the Post model
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
